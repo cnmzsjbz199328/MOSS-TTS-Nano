@@ -676,20 +676,20 @@ def _render_index_html(
   <style>
     :root {
       color-scheme: light;
-      --bg: #eef1f7;
-      --bg-soft: #f7f8fc;
-      --panel: #ffffff;
-      --text: #1f2534;
-      --muted: #647089;
-      --line: #dbe2f0;
-      --line-strong: #cfd8ea;
-      --chip: #dfe5ff;
-      --chip-text: #4f63d8;
-      --accent: #6a6ef6;
-      --accent-strong: #565cea;
-      --accent-soft: rgba(106, 110, 246, 0.12);
-      --danger: #ba1f46;
-      --shadow: 0 14px 32px rgba(34, 47, 78, 0.06);
+      --bg: #f3f5f9;
+      --bg-soft: #f8fafc;
+      --panel: rgba(255, 255, 255, 0.75);
+      --text: #1e293b;
+      --muted: #64748b;
+      --line: rgba(226, 232, 240, 0.8);
+      --line-strong: #cbd5e1;
+      --chip: #e0e7ff;
+      --chip-text: #4338ca;
+      --accent: #6366f1;
+      --accent-strong: #4f46e5;
+      --accent-soft: rgba(99, 102, 241, 0.12);
+      --danger: #e11d48;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
     }
     * {
       box-sizing: border-box;
@@ -777,10 +777,12 @@ def _render_index_html(
     }
     .panel {
       background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      padding: 12px;
-      box-shadow: var(--shadow);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8);
     }
     .field {
       margin-bottom: 11px;
@@ -907,18 +909,19 @@ def _render_index_html(
     }
     button:not(.top-tab) {
       border: 0;
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 14px;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 15px;
       font-weight: 700;
       cursor: pointer;
-      background: linear-gradient(90deg, #6469f6 0%, #636ef8 50%, #5f61f0 100%);
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
       color: #fff;
-      transition: transform 140ms ease, box-shadow 140ms ease, opacity 140ms ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+      box-shadow: 0 4px 6px rgba(79, 70, 229, 0.15);
     }
     button:not(.top-tab):hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 16px rgba(97, 101, 242, 0.24);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3);
     }
     #generate-btn {
       width: 100%;
@@ -1197,16 +1200,16 @@ def _render_index_html(
         <div class="buttons">
           <button id="generate-btn" type="button">Generate</button>
           <button id="pause-btn" class="secondary" type="button" disabled>Pause Playback</button>
-          <button id="refresh-btn" class="secondary" type="button">Refresh Warmup Status</button>
+          <button id="refresh-btn" class="secondary" type="button" style="display:none;">Refresh Warmup Status</button>
         </div>
       </div>
 
       <div class="panel output-panel">
-        <div class="field">
+        <div class="field" style="display:none;">
           <label class="field-tag">Warmup Status</label>
           <div id="warmup-status" class="status">__WARMUP_STATUS__</div>
         </div>
-        <div class="field">
+        <div class="field" style="display:none;">
           <label class="field-tag">Text Normalization Status</label>
           <div id="text-normalization-status" class="status">__TEXT_NORMALIZATION_STATUS__</div>
         </div>
@@ -1215,7 +1218,7 @@ def _render_index_html(
           <div id="run-status" class="status">Idle.</div>
         </div>
         <div id="stream-metrics" class="meta"></div>
-        <div class="field">
+        <div class="field" style="display:none;">
           <label class="field-tag">Normalized Text</label>
           <textarea id="normalized-text-output" readonly style="min-height: 120px;"></textarea>
         </div>

@@ -1,0 +1,9 @@
+.git
+.gitignore
+__pycache__
+*.pyc
+.app_prompt_uploads
+generated_audio
+models
+deploy.py
+Dockerfile
