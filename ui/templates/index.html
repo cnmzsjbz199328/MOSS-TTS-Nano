@@ -583,13 +583,29 @@
                     const bytes = new Uint8Array(binary.length);
                     for(let j=0; j<binary.length; j++) bytes[j] = binary.charCodeAt(j);
                     
-                    // Slice out WAV header (assume standard 44 bytes)
-                    pcmChunks.push(bytes.slice(44));
-                    
                     // If we need the header for the final audio
                     if(i === 0) {
                         window._wavHeaderTpl = bytes.slice(0, 44);
+                    } else {
+                        // Add a silence gap (0.6s) between lines to ensure natural pause
+                        try {
+                            const view = new DataView(window._wavHeaderTpl.buffer);
+                            const numChannels = view.getUint16(22, true);
+                            const sampleRate = view.getUint32(24, true);
+                            const bitsPerSample = view.getUint16(34, true);
+                            
+                            const silenceDuration = 0.6; // 0.6 seconds gap
+                            const silenceSamples = Math.floor(sampleRate * silenceDuration);
+                            const silenceBytesCount = silenceSamples * numChannels * (bitsPerSample / 8);
+                            const silenceChunk = new Uint8Array(silenceBytesCount);
+                            pcmChunks.push(silenceChunk);
+                        } catch (e) {
+                            console.error("Failed to inject natural pause gap", e);
+                        }
                     }
+                    
+                    // Slice out WAV header (assume standard 44 bytes)
+                    pcmChunks.push(bytes.slice(44));
                 }
                 
                 if(pcmChunks.length > 0) {
