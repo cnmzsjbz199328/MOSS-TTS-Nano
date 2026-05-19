@@ -105,6 +105,7 @@ MOSS-TTS-Nano focuses on the part of TTS deployment that matters most in practic
 - **CPU friendly**: streaming generation can run on a **4-core CPU**
 - **Long-text capable**: supports long input with automatic chunked voice cloning
 - **Open-source deployment**: direct `python infer.py`, `python app.py`, and packaged CLI support
+- **Modular & Production-Ready**: Cleanly separated `api/`, `core/`, and `ui/` directories for scalable integration.
 
 <p align="center">
   <img src="./assets/images/arch_moss_tts_nano.png" alt="MOSS-TTS-Nano architecture" width="80%" />
@@ -179,7 +180,9 @@ You can launch the local FastAPI demo for browser-based testing:
 python app.py
 ```
 
-Then open `http://127.0.0.1:18083` in your browser.
+Then open `http://127.0.0.1:18083` in your browser. 
+
+The web interface features a sleek, minimalist **Playground aesthetic** and includes a **Multi-Speaker Dialogue** editor for choreographing conversations with natural pause gaps between speakers.
 
 <a id="onnx-cpu-version"></a>
 
@@ -262,6 +265,18 @@ python app_onnx.py \
 Then open `http://127.0.0.1:18083` in your browser.
 
 The first startup may spend extra time downloading assets if `models/` does not contain the ONNX weights yet.
+
+### REST API Endpoints
+
+Once the application (`app.py` or `app_onnx.py`) is running, it exposes a fully-documented REST API powered by FastAPI.
+
+- **Interactive API Docs (Swagger UI)**: Available at `http://127.0.0.1:18083/docs` (or via the "API Docs" link in the Web UI).
+- **Generation Endpoint**: `POST /api/generate`
+  - Accepts `multipart/form-data` containing `text`, `demo_id`, or `prompt_speech` files.
+  - Returns a JSON response containing base64-encoded audio and the `sample_rate`.
+- **Streaming Endpoints**: Supports SSE (Server-Sent Events) for low-latency, real-time chunked audio playback.
+
+All route handlers are cleanly encapsulated within `api/routes.py`, making it straightforward for developers to hook into the core logic (`core/`) and build custom downstream services.
 
 ### Export TTS-only ONNX Weights
 
