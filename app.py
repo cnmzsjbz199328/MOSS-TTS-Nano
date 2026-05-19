@@ -25,6 +25,7 @@ from core.models import DemoEntry
 from core.warmup import WarmupManager
 from core.stream_manager import RequestRuntimeManager, StreamingJobManager
 from api import build_router
+from api.routes import _render_index_html  # re-exported for app_onnx.py compatibility
 APP_DIR = Path(__file__).resolve().parent
 DEMO_METADATA_PATH = APP_DIR / "assets" / "demo.jsonl"
 PROMPT_UPLOAD_DIR = APP_DIR / ".app_prompt_uploads"
