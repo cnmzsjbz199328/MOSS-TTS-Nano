@@ -21,7 +21,10 @@ dependencies = [
   "transformers==4.57.1",
   "uvicorn>=0.29.0",
   "onnxruntime>=1.20.0",
+  "WeTextProcessing>=1.0.4.1",
+  "soundfile",
 ]
+
 
 [project.urls]
 Homepage = "https://github.com/OpenMOSS/MOSS-TTS-Nano"
@@ -32,7 +35,8 @@ Documentation = "https://studio.mosi.cn/docs/moss-tts-nano"
 moss-tts-nano = "moss_tts_nano.cli:main"
 
 [tool.setuptools]
-packages = ["moss_tts_nano"]
+packages = ["moss_tts_nano", "core", "ui"]
+
 py-modules = [
   "app",
   "app_onnx",
