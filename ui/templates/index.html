@@ -5,397 +5,209 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>MOSS-TTS-Nano Demo</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
     :root {
-      color-scheme: light;
-      --bg: #f3f5f9;
-      --bg-soft: #f8fafc;
-      --panel: rgba(255, 255, 255, 0.75);
-      --text: #1e293b;
-      --muted: #64748b;
-      --line: rgba(226, 232, 240, 0.8);
-      --line-strong: #cbd5e1;
-      --chip: #e0e7ff;
-      --chip-text: #4338ca;
-      --accent: #6366f1;
-      --accent-strong: #4f46e5;
-      --accent-soft: rgba(99, 102, 241, 0.12);
-      --danger: #e11d48;
-      --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      --bg: #ffffff;
+      --bg-soft: #f9fafb;
+      --panel: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --line-strong: #d1d5db;
+      --accent: #1a73e8;
+      --accent-soft: #e8f0fe;
+      --danger: #dc2626;
+      --spk1: #e8f0fe; --spk1-text: #1a73e8;
+      --spk2: #fce8e6; --spk2-text: #c5221f;
+      --spk3: #e6f4ea; --spk3-text: #137333;
+      --spk4: #fef3e2; --spk4-text: #b06000;
     }
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      margin: 0;
       min-height: 100vh;
-      background:
-        radial-gradient(1100px 380px at 12% -10%, #ffffff 0%, transparent 70%),
-        linear-gradient(180deg, var(--bg-soft) 0%, var(--bg) 54%);
+      background: var(--bg);
       color: var(--text);
-      font-family: "Plus Jakarta Sans", "Noto Sans SC", "Segoe UI", sans-serif;
+      font-family: 'Inter', 'Noto Sans SC', 'Segoe UI', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
     }
-    .page {
-      max-width: 1460px;
-      margin: 0 auto;
-      padding: 24px 26px 30px;
-    }
-    .hero {
-      margin-bottom: 12px;
-    }
-    .hero h1 {
-      margin: 0 0 10px;
-      font-size: 38px;
-      letter-spacing: -0.03em;
-    }
-    .hero .lead {
-      margin: 0 0 8px;
-      color: var(--muted);
-      font-size: 19px;
-      line-height: 1.55;
-      max-width: 980px;
-    }
-    .hero-points {
-      margin: 0 0 8px 20px;
-      padding: 0;
-      color: #33415f;
-      line-height: 1.6;
-    }
-    .hero-points strong {
-      color: #121826;
-    }
-    .build-note {
-      margin: 0;
-      color: #4f5d7c;
-    }
-    .top-tabs {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-      margin-top: 14px;
-      border-bottom: 1px solid var(--line);
-    }
+    .page { max-width: 1400px; margin: 0 auto; padding: 20px 24px 40px; }
+    /* Header */
+    .hero { padding: 16px 0 0; }
+    .hero h1 { font-size: 20px; font-weight: 600; letter-spacing: -.01em; color: var(--text); margin-bottom: 2px; }
+    .hero .lead { color: var(--muted); font-size: 13px; }
+    .hero-points, .build-note { display: none; }
+    /* Tabs */
+    .top-tabs { display: flex; align-items: center; gap: 0; margin-top: 14px; border-bottom: 1px solid var(--line); }
     .top-tab {
-      border: 0;
-      background: transparent;
-      color: #4e5f89;
-      font-size: 15px;
-      font-weight: 500;
-      padding: 10px 0;
-      position: relative;
-      cursor: default;
+      border: 0; background: transparent; color: var(--muted);
+      font-size: 13px; font-weight: 500; padding: 10px 16px;
+      position: relative; cursor: pointer; font-family: inherit; transition: color 150ms;
     }
-    .top-tab.active {
-      color: var(--accent-strong);
-      font-weight: 700;
-    }
+    .top-tab:hover { color: var(--text); }
+    .top-tab.active { color: var(--accent); font-weight: 600; }
     .top-tab.active::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: -1px;
-      height: 2px;
-      background: var(--accent-strong);
+      content: ''; position: absolute; left: 0; right: 0; bottom: -1px;
+      height: 2px; background: var(--accent); border-radius: 2px 2px 0 0;
     }
-    .top-tab:disabled {
-      opacity: 1;
-    }
+    .top-tab:disabled { opacity: 1; }
+    /* Layout */
     .grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
-      gap: 14px;
-      margin-top: 14px;
-    }
-    .panel {
-      background: var(--panel);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      border-radius: 16px;
-      padding: 20px;
-      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    }
-    .field {
-      margin-bottom: 11px;
-    }
-    .field > label[for],
-    .field > .field-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 7px;
-      font-size: 14px;
-      line-height: 1;
-      font-weight: 700;
-      color: var(--chip-text);
-      background: var(--chip);
-      border-radius: 6px;
-      padding: 5px 8px;
-    }
-    .field > label[for]::before,
-    .field > .field-tag::before {
-      content: "♫";
-      font-size: 11px;
-      opacity: 0.75;
-    }
-    .field > label:not([for]):not(.field-tag) {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 2px;
-      color: #273554;
-      font-size: 14px;
-      font-weight: 500;
-    }
-    .field input,
-    .field textarea,
-    .field select {
-      width: 100%;
+      grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
       border: 1px solid var(--line);
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 14px;
-      color: var(--text);
-      background: #fff;
-      transition: border-color 140ms ease, box-shadow 140ms ease;
-    }
-    .field input:focus,
-    .field textarea:focus,
-    .field select:focus {
-      outline: 0;
-      border-color: #aeb9f7;
-      box-shadow: 0 0 0 3px rgba(106, 110, 246, 0.15);
-    }
-    .field textarea {
-      min-height: 108px;
-      resize: vertical;
-    }
-    #normalized-text-output {
-      min-height: 114px;
-      background: #fbfcff;
-    }
-    input[type="file"] {
-      border-style: dashed;
-      border-color: var(--line-strong);
-      padding: 54px 12px;
-      background: linear-gradient(180deg, #ffffff 0%, #f5f8ff 100%);
-      color: #4d5d83;
-    }
-    input[type="file"]::file-selector-button {
-      border: 0;
-      border-radius: 999px;
-      padding: 8px 12px;
-      margin-right: 10px;
-      background: #edf1ff;
-      color: var(--chip-text);
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .prompt-audio-box {
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: linear-gradient(180deg, #ffffff 0%, #f7f9ff 100%);
-      padding: 10px;
-    }
-    #prompt-audio-preview {
+      border-top: none;
+      border-radius: 0 0 8px 8px;
+      overflow: hidden;
       margin-top: 0;
     }
-    #prompt-audio-upload[hidden],
-    #prompt-audio-preview[hidden] {
-      display: none;
-    }
-    .prompt-audio-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-      flex-wrap: wrap;
-    }
-    .prompt-audio-actions button {
-      min-height: 34px;
-      font-size: 13px;
-      padding: 8px 12px;
-    }
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    details {
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      padding: 10px 12px;
-      margin: 12px 0;
-      background: #f9fafe;
-    }
-    summary {
-      cursor: pointer;
-      font-weight: 600;
-      color: #2f3f65;
-    }
-    .buttons {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto auto;
-      gap: 10px;
-      margin-top: 12px;
-    }
-    button:not(.top-tab) {
-      border: 0;
-      border-radius: 10px;
-      padding: 12px 18px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      color: #fff;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
-      box-shadow: 0 4px 6px rgba(79, 70, 229, 0.15);
-    }
-    button:not(.top-tab):hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 15px rgba(79, 70, 229, 0.3);
-    }
-    #generate-btn {
-      width: 100%;
-      min-height: 42px;
-    }
-    button.secondary {
-      background: #edf1fb;
-      color: #44527a;
-      border: 1px solid var(--line-strong);
-    }
-    button:not(.top-tab):disabled {
-      opacity: 0.6;
-      cursor: wait;
-      transform: none;
-      box-shadow: none;
-    }
-    .status {
-      white-space: pre-wrap;
-      line-height: 1.5;
-      font-size: 14px;
-      color: var(--muted);
-      min-height: 52px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: #fcfdff;
-      padding: 10px 12px;
-    }
-    .status.error {
-      color: var(--danger);
-      border-color: rgba(186, 31, 70, 0.28);
-      background: rgba(186, 31, 70, 0.06);
-    }
-    .meta {
-      font-size: 13px;
-      color: var(--muted);
-      margin-top: 7px;
-      line-height: 1.5;
-    }
-    .playback-script {
-      min-height: 108px;
-      display: flex;
-      flex-wrap: wrap;
-      align-content: flex-start;
-      gap: 10px;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: linear-gradient(180deg, #ffffff 0%, #f6f8fe 100%);
-      overflow: auto;
-    }
-    .playback-script.empty {
+    .panel { background: var(--panel); padding: 20px; }
+    .panel + .panel { border-left: 1px solid var(--line); }
+    /* Fields */
+    .field { margin-bottom: 16px; }
+    .field > label[for], .field > .field-tag {
       display: block;
-      color: var(--muted);
+      font-size: 11px; font-weight: 500;
+      text-transform: uppercase; letter-spacing: .06em;
+      color: var(--muted); margin-bottom: 6px;
+      background: none; padding: 0; border-radius: 0;
     }
-    .playback-segment {
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 11px;
-      border-radius: 10px;
-      border: 1px solid var(--line);
-      background: #ffffff;
-      color: #4a5c82;
-      line-height: 1.6;
-      transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+    .field > label[for]::before, .field > .field-tag::before { content: none; }
+    .field > label:not([for]):not(.field-tag) {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--text); font-size: 13px;
     }
-    .playback-segment.played {
-      border-color: rgba(106, 110, 246, 0.24);
-      background: var(--accent-soft);
-      color: #424db6;
-    }
-    .playback-segment.active {
-      border-color: var(--accent-strong);
-      background: var(--accent);
-      color: #ffffff;
-      box-shadow: 0 8px 18px rgba(106, 110, 246, 0.32);
-      transform: translateY(-1px);
-    }
-    audio {
+    .field input, .field textarea, .field select {
       width: 100%;
-      margin-top: 10px;
-      border-radius: 8px;
-      background: #f8f9fe;
+      border: 1px solid var(--line); border-radius: 6px;
+      padding: 7px 10px; font-size: 13px; font-family: inherit;
+      color: var(--text); background: var(--bg-soft);
+      transition: border-color 120ms, box-shadow 120ms;
     }
-    code {
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: #eef1fb;
-      color: #33426a;
+    .field input:focus, .field textarea:focus, .field select:focus {
+      outline: 0; border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(26,115,232,.15); background: #fff;
     }
-    a {
-      color: #4a5be0;
-      text-decoration: none;
+    .field textarea { min-height: 100px; resize: vertical; }
+    #normalized-text-output { min-height: 80px; }
+    input[type='file'] {
+      border-style: dashed; padding: 32px 12px;
+      background: var(--bg-soft); color: var(--muted); text-align: center;
     }
-    a:hover {
-      text-decoration: underline;
+    input[type='file']::file-selector-button {
+      border: 1px solid var(--line); border-radius: 4px;
+      padding: 4px 10px; margin-right: 10px; background: #fff;
+      color: var(--text); font-size: 12px; cursor: pointer;
     }
-    @media (max-width: 1120px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
-      .buttons {
-        grid-template-columns: 1fr;
-      }
-      .hero h1 {
-        font-size: 32px;
-      }
+    .prompt-audio-box { border: 1px solid var(--line); border-radius: 6px; background: var(--bg-soft); padding: 10px; }
+    #prompt-audio-preview { margin-top: 0; }
+    #prompt-audio-upload[hidden], #prompt-audio-preview[hidden] { display: none; }
+    .prompt-audio-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .prompt-audio-actions button { min-height: 30px; font-size: 12px; padding: 5px 10px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    details { border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px; margin: 12px 0; background: var(--bg-soft); }
+    summary { cursor: pointer; font-size: 13px; font-weight: 500; color: var(--text); user-select: none; }
+    .buttons { display: grid; grid-template-columns: minmax(0,1fr) auto auto; gap: 8px; margin-top: 12px; }
+    button:not(.top-tab) {
+      border: 1px solid var(--line); border-radius: 6px;
+      padding: 7px 14px; font-size: 13px; font-weight: 500;
+      font-family: inherit; cursor: pointer;
+      background: var(--bg-soft); color: var(--text);
+      transition: background 120ms, border-color 120ms;
     }
-    @media (max-width: 860px) {
-      .row {
-        grid-template-columns: 1fr;
-      }
-      .page {
-        padding: 16px 14px 20px;
-      }
-      .hero .lead {
-        font-size: 16px;
-      }
-      .hero h1 {
-        font-size: 28px;
-      }
-      .top-tabs {
-        gap: 14px;
-      }
+    button:not(.top-tab):hover { background: var(--line-strong); }
+    button:not(.top-tab)#generate-btn,
+    button:not(.top-tab)#generate-dialogue-btn {
+      background: var(--accent); color: #fff;
+      border-color: var(--accent); font-weight: 600;
+    }
+    button:not(.top-tab)#generate-btn:hover,
+    button:not(.top-tab)#generate-dialogue-btn:hover { background: #1557b0; border-color: #1557b0; }
+    #generate-btn { width: 100%; min-height: 36px; }
+    button.secondary { background: var(--bg-soft); color: var(--muted); border-color: var(--line); }
+    button:not(.top-tab):disabled { opacity: .5; cursor: not-allowed; }
+    .status {
+      white-space: pre-wrap; line-height: 1.6; font-size: 13px; color: var(--muted);
+      min-height: 44px; border: 1px solid var(--line); border-radius: 6px;
+      background: var(--bg-soft); padding: 8px 10px;
+    }
+    .status.error { color: var(--danger); border-color: #fca5a5; background: #fef2f2; }
+    .meta { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+    .playback-script {
+      min-height: 80px; display: flex; flex-wrap: wrap; align-content: flex-start;
+      gap: 6px; padding: 10px; border: 1px solid var(--line); border-radius: 6px;
+      background: var(--bg-soft); overflow: auto;
+    }
+    .playback-script.empty { display: block; color: var(--muted); font-size: 13px; }
+    .playback-segment {
+      display: inline-flex; align-items: center; padding: 3px 10px;
+      border-radius: 4px; border: 1px solid var(--line);
+      background: #fff; color: var(--muted); font-size: 13px; line-height: 1.5;
+      transition: background 140ms, color 140ms, border-color 140ms;
+    }
+    .playback-segment.played { border-color: #93c5fd; background: #eff6ff; color: #1d4ed8; }
+    .playback-segment.active { border-color: var(--accent); background: var(--accent); color: #fff; }
+    audio { width: 100%; margin-top: 10px; border-radius: 6px; }
+    code { padding: 1px 5px; border-radius: 3px; background: var(--bg-soft); color: var(--text); font-size: 12px; border: 1px solid var(--line); }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    /* Dialogue */
+    .spk-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 999px;
+      font-size: 12px; font-weight: 500;
+      background: var(--spk1); color: var(--spk1-text); margin-bottom: 6px;
+    }
+    .spk-pill[data-spk-color='2'] { background: var(--spk2); color: var(--spk2-text); }
+    .spk-pill[data-spk-color='3'] { background: var(--spk3); color: var(--spk3-text); }
+    .spk-pill[data-spk-color='4'] { background: var(--spk4); color: var(--spk4-text); }
+    .dialogue-block { padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .dialogue-block:last-child { border-bottom: none; }
+    .dialogue-block textarea {
+      width: 100%; border: none; background: transparent; resize: none;
+      font-size: 14px; font-family: inherit; color: var(--text);
+      outline: none; min-height: 48px; padding: 4px 0;
+    }
+    .dialogue-block-actions { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+    .dialogue-block-actions select {
+      font-size: 12px; border: 1px solid var(--line); border-radius: 4px;
+      background: var(--bg-soft); color: var(--text); padding: 3px 6px; font-family: inherit;
+    }
+    .speaker-card {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; border: 1px solid var(--line);
+      border-radius: 6px; background: var(--bg-soft); margin-bottom: 8px;
+    }
+    .speaker-card-left { display: flex; align-items: center; gap: 10px; }
+    .speaker-card-name { font-size: 13px; font-weight: 600; border: none; background: transparent; outline: none; width: 90px; font-family: inherit; }
+    .speaker-card-desc { font-size: 12px; color: var(--muted); }
+    .speaker-badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: var(--spk1); color: var(--spk1-text); }
+    .speaker-badge[data-spk-color='2'] { background: var(--spk2); color: var(--spk2-text); }
+    .speaker-badge[data-spk-color='3'] { background: var(--spk3); color: var(--spk3-text); }
+    .speaker-badge[data-spk-color='4'] { background: var(--spk4); color: var(--spk4-text); }
+    .section-label { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 12px; display: block; }
+    hr.divider { border: none; border-top: 1px solid var(--line); margin: 20px 0; }
+    @media (max-width: 1100px) {
+      .grid { grid-template-columns: 1fr; }
+      .panel + .panel { border-left: none; border-top: 1px solid var(--line); }
+      .buttons { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .row { grid-template-columns: 1fr; }
+      .page { padding: 12px 14px 24px; }
+      .hero h1 { font-size: 17px; }
     }
   </style>
 </head>
 <body>
   <div class="page">
     <div class="hero">
-      <h1>MOSS-TTS-Nano Demo</h1>
-      <p class="lead">State-of-the-art text-to-speech demo for multilingual voice cloning.</p>
-      <ul class="hero-points">
-        <li><strong>Voice Clone</strong> - Clone any voice from a reference audio.</li>
-        <li><strong>Voice Presets</strong> - Choose built-in demos from <code>assets/demo.jsonl</code>.</li>
-      </ul>
-      <p class="build-note">Built with <a href="https://github.com/OpenMOSS/MOSS-TTS-Nano" target="_blank" rel="noopener noreferrer">MOSS-TTS-Nano</a>.</p>
+      <h1>MOSS-TTS-Nano</h1>
+      <p class="lead">Multilingual voice cloning &amp; text-to-speech</p>
       <div class="top-tabs" role="tablist" aria-label="Demo mode">
         <button class="top-tab active" type="button" id="tab-voice-clone" aria-selected="true">Voice Clone</button>
         <button class="top-tab" type="button" id="tab-dialogue">Multi-Speaker</button>
-        <a href="docs" target="_blank" class="top-tab" style="text-decoration: none; margin-left: auto; display: flex; align-items: center; gap: 4px;">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-          API Docs
-        </a>
+        <a href="docs" target="_blank" class="top-tab" style="text-decoration:none;margin-left:auto;">API Docs</a>
       </div>
     </div>
 
@@ -573,25 +385,23 @@
     </div>
   
     <!-- Dialogue View -->
-    <div class="grid" id="view-dialogue" style="display: none; grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);">
+    <div class="grid" id="view-dialogue" style="display:none;">
       <div class="panel">
-        <h3 style="margin-top:0; color:#1e293b; font-size:18px;">Dialogue Editor</h3>
-        <div id="dialogue-blocks-container" style="display:flex; flex-direction:column; gap: 16px;"></div>
-        <button id="add-dialogue-block-btn" class="secondary" style="margin-top: 16px; width: 100%; border-style: dashed;">+ Add Line</button>
-        
-        <div class="buttons" style="margin-top: 24px;">
-          <button id="generate-dialogue-btn" type="button" style="width: 100%;">Generate Dialogue</button>
+        <span class="section-label">Dialogue Script</span>
+        <div id="dialogue-blocks-container"></div>
+        <button id="add-dialogue-block-btn" class="secondary" style="margin-top:12px;width:100%;font-size:12px;">+ Add Line</button>
+        <div style="margin-top:16px;">
+          <button id="generate-dialogue-btn" type="button" style="width:100%;">Generate Dialogue</button>
         </div>
       </div>
       <div class="panel">
-        <h3 style="margin-top:0; color:#1e293b; font-size:18px;">Speaker Settings</h3>
-        <div id="speakers-container" style="display:flex; flex-direction:column; gap: 12px;"></div>
-        <button id="add-speaker-btn" class="secondary" style="margin-top: 12px; width: 100%; font-size: 13px; border-style: dashed;">+ Add Speaker</button>
-
-        <hr style="border: 0; border-top: 1px solid var(--line); margin: 24px 0;">
-        <h3 style="margin-top:0; color:#1e293b; font-size:18px;">Output</h3>
-        <div id="dialogue-run-status" class="status" style="margin-bottom: 12px;">Idle.</div>
-        <audio id="dialogue-audio-output" controls style="width: 100%; display: none;"></audio>
+        <span class="section-label">Speaker Settings</span>
+        <div id="speakers-container"></div>
+        <button id="add-speaker-btn" class="secondary" style="margin-top:8px;width:100%;font-size:12px;">+ Add Speaker</button>
+        <hr class="divider">
+        <span class="section-label">Output</span>
+        <div id="dialogue-run-status" class="status" style="margin-bottom:10px;">Idle.</div>
+        <audio id="dialogue-audio-output" controls style="width:100%;display:none;"></audio>
       </div>
     </div>
     </div>
@@ -638,49 +448,67 @@
     let speakerIdCounter = 3;
     let blockIdCounter = 3;
 
+    function getSpeakerColor(index) {
+        return String((index % 4) + 1);
+    }
+
     function renderDialogueUI() {
         const speakersContainer = document.getElementById("speakers-container");
         const blocksContainer = document.getElementById("dialogue-blocks-container");
-        
-        // Render Speakers
+
+        // Render Speakers — card style like AI Studio right panel
         speakersContainer.innerHTML = "";
         dialogueSpeakers.forEach((spk, index) => {
+            const color = getSpeakerColor(index);
             const div = document.createElement("div");
-            div.style.cssText = "padding: 12px; border: 1px solid var(--line); border-radius: 12px; background: #f8fafc;";
-            
+            div.className = "speaker-card";
+
             let optionsHtml = DEMOS.map(d => `<option value="${d.id}" ${spk.demoId === d.id ? 'selected' : ''}>${d.name}</option>`).join('');
-            
+            const removeBtn = dialogueSpeakers.length > 1
+                ? `<button onclick="removeSpeaker(${spk.id})" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;">✕</button>`
+                : '';
+
             div.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <input type="text" value="${spk.name}" onchange="updateSpeakerName(${spk.id}, this.value)" style="font-weight: 700; border: none; background: transparent; padding: 0; margin: 0; color: var(--accent-strong); font-size: 14px; outline: none; width: 120px;">
-                    ${dialogueSpeakers.length > 1 ? `<button onclick="removeSpeaker(${spk.id})" style="background:transparent; border:none; color:var(--danger); padding:0; box-shadow:none; font-size: 12px;">Remove</button>` : ''}
+                <div class="speaker-card-left">
+                    <span class="speaker-badge" data-spk-color="${color}">Speaker ${index + 1}</span>
+                    <div>
+                        <input class="speaker-card-name" type="text" value="${spk.name}" onchange="updateSpeakerName(${spk.id}, this.value)">
+                        <div class="speaker-card-desc">
+                            <select onchange="updateSpeakerVoice(${spk.id}, this.value)" style="border:none;background:transparent;color:var(--muted);font-size:12px;outline:none;font-family:inherit;padding:0;width:140px;">
+                                ${optionsHtml}
+                            </select>
+                        </div>
+                    </div>
                 </div>
-                <div class="field" style="margin: 0;">
-                    <select onchange="updateSpeakerVoice(${spk.id}, this.value)" style="padding: 6px 8px; font-size: 13px;">
-                        ${optionsHtml}
-                    </select>
-                </div>
+                ${removeBtn}
             `;
             speakersContainer.appendChild(div);
         });
 
-        // Render Blocks
+        // Render Blocks — Playground Composer style
         blocksContainer.innerHTML = "";
         dialogueBlocks.forEach((blk, index) => {
+            const spk = dialogueSpeakers.find(s => s.id === blk.speakerId);
+            const spkIndex = dialogueSpeakers.findIndex(s => s.id === blk.speakerId);
+            const color = getSpeakerColor(spkIndex);
+            const spkName = spk ? spk.name : "Unknown";
+
             const div = document.createElement("div");
-            div.style.cssText = "border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff;";
-            
-            let spkOptions = dialogueSpeakers.map(s => `<option value="${s.id}" ${blk.speakerId === s.id ? 'selected' : ''}>👤 ${s.name}</option>`).join('');
-            
+            div.className = "dialogue-block";
+
+            let spkOptions = dialogueSpeakers.map((s, si) => {
+                const c = getSpeakerColor(si);
+                return `<option value="${s.id}" ${blk.speakerId === s.id ? 'selected' : ''}>${s.name}</option>`;
+            }).join('');
+
             div.innerHTML = `
-                <div style="background: #f1f5f9; padding: 8px 12px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center;">
-                    <select onchange="updateBlockSpeaker(${blk.id}, this.value)" style="border:none; background:transparent; font-weight: 700; font-size: 13px; color: #334155; outline: none; padding: 0;">
-                        ${spkOptions}
-                    </select>
-                    <button onclick="removeBlock(${blk.id})" style="background:transparent; border:none; color:var(--muted); padding:0; box-shadow:none; font-size: 12px; cursor: pointer;">✕</button>
+                <div class="spk-pill" data-spk-color="${color}">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                    <select onchange="updateBlockSpeaker(${blk.id}, this.value)" style="border:none;background:transparent;color:inherit;font-size:12px;font-weight:500;outline:none;font-family:inherit;cursor:pointer;">${spkOptions}</select>
                 </div>
-                <div style="padding: 12px;">
-                    <textarea onchange="updateBlockText(${blk.id}, this.value)" placeholder="Enter dialogue line here..." style="width: 100%; border: none; resize: vertical; min-height: 60px; outline: none; font-size: 14px; padding: 0; box-shadow: none;">${blk.text}</textarea>
+                <textarea class="dialogue-block-textarea" placeholder="Enter dialogue line here..." oninput="updateBlockText(${blk.id}, this.value)">${blk.text}</textarea>
+                <div class="dialogue-block-actions">
+                    <button onclick="removeBlock(${blk.id})" style="background:transparent;border:none;color:var(--muted);font-size:12px;cursor:pointer;padding:0;">Remove</button>
                 </div>
             `;
             blocksContainer.appendChild(div);
