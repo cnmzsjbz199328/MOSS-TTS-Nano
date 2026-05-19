@@ -63,7 +63,8 @@ MOSS-TTS 2.0 is coming soon. To better optimize model capabilities and product e
 ## Demo
 
 - Online Demo: [https://openmoss.github.io/MOSS-TTS-Nano-Demo/](https://openmoss.github.io/MOSS-TTS-Nano-Demo/)
-- Hugging Face Space: [OpenMOSS-Team/MOSS-TTS-Nano](https://huggingface.co/spaces/OpenMOSS-Team/MOSS-TTS-Nano)
+- Hugging Face Space (Official): [OpenMOSS-Team/MOSS-TTS-Nano](https://huggingface.co/spaces/OpenMOSS-Team/MOSS-TTS-Nano)
+- Hugging Face Space (Custom Refactored): [Tom199328/MOSS-TTS-Nano](https://huggingface.co/spaces/Tom199328/MOSS-TTS-Nano)
 
 ## Contents
 

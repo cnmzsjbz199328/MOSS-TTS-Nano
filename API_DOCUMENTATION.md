@@ -173,3 +173,11 @@ Streams a reference preset voice file directly.
 
 - **Parameters**: `demo_id` (e.g. `zh_1`, `en_3`).
 - **Response**: Binary audio file stream (`audio/wav`).
+
+---
+
+## 5. Live Deployments
+
+You can interact with a live deployment of this refactored, minimalist modular version here:
+- **Hugging Face Space (Refactored)**: [Tom199328/MOSS-TTS-Nano](https://huggingface.co/spaces/Tom199328/MOSS-TTS-Nano)
+
